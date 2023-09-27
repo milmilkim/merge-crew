@@ -13,13 +13,12 @@ import * as SplashScreen from 'expo-splash-screen';
 import { useCallback } from 'react';
 import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
 import { Ionicons } from '@expo/vector-icons';
+import { WebView } from 'react-native-webview';
 
 SplashScreen.preventAutoHideAsync();
 
 const { width: SCREEN_WIDTH, height } = Dimensions.get('window');
 const Tab = createBottomTabNavigator();
-
-
 
 const theme = {
   colors: {
@@ -35,24 +34,20 @@ const tabScreenOptions = {
   tabBarInactiveTintColor: theme.colors.primary,
 };
 
-
-
-const iconMap: { [route: string]: { focused: string, unfocused: string } } = {
-  'Home': {
+const iconMap: { [route: string]: { focused: string; unfocused: string } } = {
+  Home: {
     focused: 'md-home-sharp',
-    unfocused: 'md-home-outline'
+    unfocused: 'md-home-outline',
   },
-  'About': {
+  About: {
     focused: 'ios-list-outline',
-    unfocused: 'ios-list'
-  }
-}
-
+    unfocused: 'ios-list',
+  },
+};
 
 function getIconName(routeName: string, focused: boolean) {
   return focused ? iconMap[routeName]?.focused : iconMap[routeName]?.unfocused;
 }
-
 
 export default function App() {
   const [fontsLoaded] = useFonts({
@@ -74,41 +69,73 @@ export default function App() {
         <Tab.Navigator
           screenOptions={({ route }) => ({
             tabBarIcon: ({ focused, color, size }) => {
-              const iconName = getIconName(route.name, focused)
+              const iconName = getIconName(route.name, focused);
 
               // You can return any component that you like here!
-              return <Ionicons name={iconName as any} size={size} color={color} />;
+              return (
+                <Ionicons name={iconName as any} size={size} color={color} />
+              );
             },
-            ...tabScreenOptions
+            ...tabScreenOptions,
           })}>
           <Tab.Screen name='Home' component={Home} />
-          <Tab.Screen name='About' component={Home} />
+          <Tab.Screen name='About' component={About} />
         </Tab.Navigator>
+        <StatusBar style='light' />
       </View>
-      <StatusBar style='inverted' />
     </NavigationContainer>
   );
 }
 
 const Home = () => {
   return (
-    <View style={styles.container}>
+    <View style={styles.page}>
+      <View style={styles.imgWrapper}>
+        <Image
+          style={styles.ship}
+          source={require('./assets/images/ship.png')}
+        />
+      </View>
       <Text style={styles.title}>MERGE CREW!</Text>
     </View>
+  );
+};
+
+const About = () => {
+  return (
+    <WebView
+      style={styles.container}
+      source={{ uri: 'https://milmilkim.github.io/project-merge/event' }}
+    />
   );
 };
 
 const styles = StyleSheet.create({
   container: {
     flex: 1,
+  },
+  page: {
     backgroundColor: theme.colors.background,
-    alignContent: 'center',
+    height: '100%',
     justifyContent: 'center',
+    alignItems: 'center',
   },
   title: {
     fontFamily: 'galmuri',
     textAlign: 'center',
     color: theme.colors.point,
     fontSize: 32,
+  },
+  imgWrapper: {
+    width: SCREEN_WIDTH / 2,
+    height: SCREEN_WIDTH / 2,
+    justifyContent: 'center',
+    alignContent: 'center',
+    overflow: 'visible',
+  },
+  ship: {
+    width: '100%',
+    height: '100%',
+    objectFit: 'contain',
   },
 });
